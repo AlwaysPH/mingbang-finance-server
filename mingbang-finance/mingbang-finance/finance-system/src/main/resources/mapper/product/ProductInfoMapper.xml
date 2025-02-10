@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.finance.product.mapper.ProductInfoMapper">
+
+    <resultMap type="ProductInfo" id="ProductInfoResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="categoryId"    column="category_id"    />
+        <result property="status"    column="status"    />
+        <result property="lowPrice"    column="low_price"    />
+        <result property="highPrice"    column="high_price"    />
+        <result property="unitId"    column="unit_id"    />
+        <result property="paperFlag"    column="paper_flag"    />
+        <result property="remark"    column="remark"    />
+        <result property="linkTemplateId"    column="link_template_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="recommendPrice"    column="recommend_price"    />
+        <result property="childrenName"    column="children_name"    />
+        <result property="parentName"    column="parent_name"    />
+        <result property="createName"    column="create_name"    />
+    </resultMap>
+
+    <sql id="selectProductInfoVo">
+        id, name, category_id, status, low_price, high_price, unit_id, paper_flag,
+          remark, link_template_id, create_by, create_time, update_by, update_time,
+          del_flag
+    </sql>
+
+    <select id="selectProductInfoList" parameterType="ProductInfo" resultMap="ProductInfoResult">
+        SELECT
+        t.id,
+        t.NAME,
+        t.category_id,
+        t.STATUS,
+        CONCAT( t.low_price, '~', t.high_price ) AS recommend_price,
+        t.unit_id,
+        t.paper_flag,
+        t.remark,
+        t.link_template_id,
+        tpc.`name` as children_name,
+        tpc1.`name` as parent_name,
+        t.create_time,
+        su.nick_name as create_name
+        FROM
+        t_product_info t
+        LEFT JOIN t_product_category tpc ON t.category_id = tpc.id
+        AND tpc.del_flag = 0
+        LEFT JOIN t_product_category tpc1 ON tpc1.id = tpc.parent_id
+        AND tpc1.del_flag = 0
+        LEFT JOIN sys_user su ON su.user_id = t.create_by
+        AND su.del_flag = 0
+        WHERE
+        t.del_flag = 0
+            <if test="name != null  and name != ''"> and t.name like concat('%', #{name}, '%')</if>
+            <if test="categoryId != null  and categoryId != ''"> and (t.category_id = #{categoryId} or tpc.parent_id = #{categoryId})</if>
+            <if test="status != null  and status != ''"> and t.status = #{status}</if>
+            <if test="linkTemplateId != null "> and t.link_template_id = #{linkTemplateId}</if>
+        order by t.create_time desc
+    </select>
+
+    <select id="selectProductInfoById" parameterType="String" resultMap="ProductInfoResult">
+        select <include refid="selectProductInfoVo"/>  from t_product_info
+        where id = #{id} and del_flag = 0
+    </select>
+
+    <insert id="insertProductInfo" parameterType="ProductInfo">
+        insert into t_product_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="categoryId != null and categoryId != ''">category_id,</if>
+            <if test="status != null">status,</if>
+            <if test="lowPrice != null">low_price,</if>
+            <if test="highPrice != null">high_price,</if>
+            <if test="unitId != null">unit_id,</if>
+            <if test="paperFlag != null">paper_flag,</if>
+            <if test="remark != null">remark,</if>
+            <if test="linkTemplateId != null">link_template_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="categoryId != null and categoryId != ''">#{categoryId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="lowPrice != null">#{lowPrice},</if>
+            <if test="highPrice != null">#{highPrice},</if>
+            <if test="unitId != null">#{unitId},</if>
+            <if test="paperFlag != null">#{paperFlag},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="linkTemplateId != null">#{linkTemplateId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateProductInfo" parameterType="ProductInfo">
+        update t_product_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="categoryId != null and categoryId != ''">category_id = #{categoryId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="lowPrice != null">low_price = #{lowPrice},</if>
+            <if test="highPrice != null">high_price = #{highPrice},</if>
+            <if test="unitId != null">unit_id = #{unitId},</if>
+            <if test="paperFlag != null">paper_flag = #{paperFlag},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="linkTemplateId != null">link_template_id = #{linkTemplateId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id} and del_flag = 0
+    </update>
+
+    <delete id="deleteProductInfoById" parameterType="String">
+        delete from t_product_info where id = #{id}
+    </delete>
+
+    <update id="deleteProductInfoByIds">
+        update t_product_info set del_flag = 1, update_by = #{userId}, update_time = now()
+        where del_flag = 0 and id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+</mapper>

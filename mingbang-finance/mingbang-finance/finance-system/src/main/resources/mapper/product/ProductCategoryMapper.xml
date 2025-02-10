@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.finance.product.mapper.ProductCategoryMapper">
+
+    <resultMap type="ProductCategory" id="TProductCategoryResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="ancestors"    column="ancestors"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="firstName"    column="first_name"    />
+        <result property="createName"    column="create_name"    />
+    </resultMap>
+
+    <sql id="all_column">
+         id, name, parent_id, ancestors, create_by, create_time, update_by, update_time, del_flag
+    </sql>
+
+    <select id="selectTProductCategoryList" resultType="com.finance.product.domain.ProductCategory">
+        SELECT
+        t.id as id,
+        t.`name` as name,
+        t.parent_id as parentId,
+        t1.`name` AS firstName,
+        su.nick_name as createName,
+        t.create_time as createTime
+        FROM
+        t_product_category t
+        LEFT JOIN t_product_category t1 ON t.parent_id = t1.id
+        AND t1.del_flag = 0
+        LEFT JOIN sys_user su ON su.user_id = t.create_by
+        AND su.del_flag = 0
+        where t.del_flag = 0
+            <if test="name != null  and name != ''"> and t.name like concat('%', #{name}, '%')</if>
+            <if test="parentId != null  and parentId != ''"> and t.parent_id = #{parentId}</if>
+            <if test="ancestors != null  and ancestors != ''"> and t.ancestors = #{ancestors}</if>
+        order by t.create_time desc
+    </select>
+
+    <select id="selectTProductCategoryById" resultType="com.finance.product.domain.ProductCategory">
+        SELECT
+            t.id as id,
+            t.`name` as name,
+            t.parent_id as parentId,
+            t1.`name` AS firstName,
+            su.nick_name as createName
+        FROM
+            t_product_category t
+            LEFT JOIN t_product_category t1 ON t.parent_id = t1.id
+            AND t1.del_flag = 0
+            LEFT JOIN sys_user su ON su.user_id = t.create_by
+            AND su.del_flag = 0
+        where t.del_flag = 0 and t.id = #{id}
+    </select>
+
+    <insert id="insertTProductCategory" parameterType="ProductCategory">
+        insert into t_product_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="parentId != null and parentId != ''">parent_id,</if>
+            <if test="ancestors != null">ancestors,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="parentId != null and parentId != ''">#{parentId},</if>
+            <if test="ancestors != null">#{ancestors},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTProductCategory" parameterType="ProductCategory">
+        update t_product_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="parentId != null and parentId != ''">parent_id = #{parentId},</if>
+            <if test="ancestors != null">ancestors = #{ancestors},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="deleteTProductCategoryByIds" parameterType="String">
+        update t_product_category set del_flag = 1, update_time = now(), update_by = #{userId}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="getChildById" resultType="int">
+        select count(*) from t_product_category where del_flag = 0 and
+        parent_id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

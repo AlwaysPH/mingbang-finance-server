@@ -20,13 +20,6 @@
                      :value="dict.value"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="环节模板" prop="linkTemplateId">
-        <el-select v-model="queryParams.linkTemplateId" placeholder="请选择环节模板" clearable
-                   @keyup.enter.native="handleQuery">
-          <el-option v-for="dict in dict.type.link_template" :key="dict.value" :label="dict.label"
-                     :value="dict.value"></el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -67,11 +60,6 @@
       <el-table-column label="是否为纸质合同" align="center" prop="paperFlag">
         <template slot-scope="scope">
           <span>{{ scope.row.paperFlag === '0' ? '是' : '否' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="环节模板" align="center" prop="linkTemplateId">
-        <template slot-scope="scope">
-          <span>{{ getDictName(scope.row.linkTemplateId, dict.type.link_template) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="说明" :show-overflow-tooltip="true" align="center" prop="remark"/>
@@ -167,16 +155,6 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="环节模板" prop="linkTemplateId" required>
-              <el-select v-model="form.linkTemplateId" :disabled="detailFlag" placeholder="请选择环节模板">
-                <el-option v-for="dict in dict.type.link_template" :key="dict.value" :label="dict.label"
-                           :value="dict.value"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
       </el-form>
       <div slot="footer" v-if="!detailFlag" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -257,9 +235,6 @@ export default {
         paperFlag: [
           {required: true, message: "是否为纸质合同不能为空", trigger: "blur"}
         ],
-        linkTemplateId: [
-          {required: true, message: "环节模板不能为空", trigger: "blur"}
-        ],
       }
     };
   },
@@ -322,7 +297,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
-
+      this.detailFlag = false;
       this.open = true;
       this.title = "添加产品信息";
     },
@@ -333,7 +308,6 @@ export default {
       getInfo(id).then(response => {
         this.form = response.data;
         this.form.unitId = response.data.unitId.toString();
-        this.form.linkTemplateId = response.data.linkTemplateId.toString();
         this.open = true;
         this.detailFlag = false;
         this.title = "修改产品信息";
@@ -346,7 +320,6 @@ export default {
       getInfo(id).then(response => {
         this.form = response.data;
         this.form.unitId = response.data.unitId.toString();
-        this.form.linkTemplateId = response.data.linkTemplateId.toString();
         this.open = true;
         this.detailFlag = true;
         this.title = "产品详情";

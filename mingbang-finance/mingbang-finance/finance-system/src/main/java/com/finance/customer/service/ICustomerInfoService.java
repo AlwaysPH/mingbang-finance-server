@@ -2,6 +2,7 @@ package com.finance.customer.service;
 
 import java.util.List;
 
+import com.finance.common.core.domain.TreeSelect;
 import com.finance.customer.domain.CustomerInfo;
 
 /**
@@ -52,10 +53,9 @@ public interface ICustomerInfoService {
     int deleteCustomerInfoByIds(String[] ids);
 
     /**
-     * 删除客户信息信息
-     *
-     * @param id 客户信息主键
-     * @return 结果
+     * 获取负责人列表
+     * @return
      */
-    int deleteCustomerInfoById(String id);
+    List<TreeSelect> getResponseUserList();
+
 }

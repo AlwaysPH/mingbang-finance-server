@@ -3,6 +3,7 @@ package com.finance.customer.mapper;
 import java.util.List;
 
 import com.finance.customer.domain.CustomerInfo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 客户信息Mapper接口
@@ -44,18 +45,11 @@ public interface CustomerInfoMapper {
     int updateCustomerInfo(CustomerInfo customerInfo);
 
     /**
-     * 删除客户信息
-     *
-     * @param id 客户信息主键
-     * @return 结果
-     */
-    int deleteCustomerInfoById(String id);
-
-    /**
      * 批量删除客户信息
      *
-     * @param ids 需要删除的数据主键集合
+     * @param ids    需要删除的数据主键集合
+     * @param userId
      * @return 结果
      */
-    int deleteCustomerInfoByIds(String[] ids);
+    int deleteCustomerInfoByIds(@Param("ids") String[] ids, @Param("userId") String userId);
 }

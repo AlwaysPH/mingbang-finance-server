@@ -3,6 +3,8 @@ package com.finance.customer.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
+import com.finance.common.exception.ServiceException;
+import com.finance.common.utils.ValidatorUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,7 +74,8 @@ public class CustomerInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermi('customer:customer:add')")
     @Log(title = "客户信息", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody CustomerInfo customerInfo) {
+    public AjaxResult add(@RequestBody CustomerInfo customerInfo) throws ServiceException {
+        ValidatorUtils.validateEntity(customerInfo);
         return toAjax(customerInfoService.insertCustomerInfo(customerInfo));
     }
 
@@ -83,6 +86,7 @@ public class CustomerInfoController extends BaseController {
     @Log(title = "客户信息", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody CustomerInfo customerInfo) {
+        ValidatorUtils.validateEntity(customerInfo);
         return toAjax(customerInfoService.updateCustomerInfo(customerInfo));
     }
 
@@ -94,5 +98,14 @@ public class CustomerInfoController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids) {
         return toAjax(customerInfoService.deleteCustomerInfoByIds(ids));
+    }
+
+    /**
+     * 获取负责人列表
+     * @return
+     */
+    @GetMapping("/getResponseUserList")
+    public AjaxResult getResponseUserList() {
+        return success(customerInfoService.getResponseUserList());
     }
 }

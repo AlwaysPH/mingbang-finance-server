@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.finance.customer.mapper.CustomerContactMapper">
+
+    <resultMap type="CustomerContact" id="CustomerContactResult">
+        <result property="id"    column="id"    />
+        <result property="customerId"    column="customer_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="sex"    column="sex"    />
+        <result property="mainFlag"    column="main_flag"    />
+        <result property="roleType"    column="role_type"    />
+        <result property="contactType"    column="contact_type"    />
+        <result property="contactNum"    column="contact_num"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectCustomerContactVo">
+        select id, customer_id, user_name, sex, main_flag, role_type, contact_type, contact_num, create_by, create_time, update_by, update_time, del_flag from t_customer_contact
+    </sql>
+
+    <select id="selectCustomerContactList" parameterType="CustomerContact" resultMap="CustomerContactResult">
+        <include refid="selectCustomerContactVo"/>
+        <where>
+            <if test="customerId != null  and customerId != ''"> and customer_id = #{customerId}</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="mainFlag != null  and mainFlag != ''"> and main_flag = #{mainFlag}</if>
+            <if test="roleType != null  and roleType != ''"> and role_type = #{roleType}</if>
+            <if test="contactType != null  and contactType != ''"> and contact_type = #{contactType}</if>
+            <if test="contactNum != null  and contactNum != ''"> and contact_num = #{contactNum}</if>
+        </where>
+    </select>
+
+    <select id="selectCustomerContactById" parameterType="String" resultMap="CustomerContactResult">
+        <include refid="selectCustomerContactVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCustomerContact" parameterType="CustomerContact">
+        insert into t_customer_contact
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="customerId != null and customerId != ''">customer_id,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="sex != null">sex,</if>
+            <if test="mainFlag != null">main_flag,</if>
+            <if test="roleType != null">role_type,</if>
+            <if test="contactType != null">contact_type,</if>
+            <if test="contactNum != null">contact_num,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="customerId != null and customerId != ''">#{customerId},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="mainFlag != null">#{mainFlag},</if>
+            <if test="roleType != null">#{roleType},</if>
+            <if test="contactType != null">#{contactType},</if>
+            <if test="contactNum != null">#{contactNum},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCustomerContact" parameterType="CustomerContact">
+        update t_customer_contact
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="customerId != null and customerId != ''">customer_id = #{customerId},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="mainFlag != null">main_flag = #{mainFlag},</if>
+            <if test="roleType != null">role_type = #{roleType},</if>
+            <if test="contactType != null">contact_type = #{contactType},</if>
+            <if test="contactNum != null">contact_num = #{contactNum},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCustomerContactById" parameterType="String">
+        delete from t_customer_contact where id = #{id}
+    </delete>
+
+    <delete id="deleteCustomerContactByIds" parameterType="String">
+        delete from t_customer_contact where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <insert id="batchSave">
+        insert into t_customer_contact(id, customer_id, user_name, sex, main_flag, role_type,
+        contact_type, contact_num, create_by, create_time, update_by, update_time, del_flag)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.customerId}, #{userName}, #{item.sex}, #{item.mainFlag}
+            , #{item.roleType}, #{item.contactType}, #{item.contactNum}, #{item.createBy}, #{item.createTime}
+            , #{item.updateBy}, #{item.updateTime}, #{item.delFlag})
+        </foreach>
+    </insert>
+
+    <update id="deleteByCustomerId">
+        update t_customer_contact set del_flag= 1, update_by = #{userId}, update_time = now()
+        where del_flag = 0 and customer_id = #{customerId}
+    </update>
+</mapper>

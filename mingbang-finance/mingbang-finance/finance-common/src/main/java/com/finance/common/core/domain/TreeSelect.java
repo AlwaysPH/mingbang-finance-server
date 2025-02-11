@@ -8,13 +8,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.finance.common.constant.UserConstants;
 import com.finance.common.core.domain.entity.SysDept;
 import com.finance.common.core.domain.entity.SysMenu;
+import com.finance.common.core.domain.entity.SysUser;
 import com.finance.common.utils.StringUtils;
+import lombok.Data;
 
 /**
  * Treeselect树结构实体类
  *
  * @author ruoyi
  */
+@Data
 public class TreeSelect implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -39,6 +42,8 @@ public class TreeSelect implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<TreeSelect> children;
 
+    private List<SysUser> userList;
+
     public TreeSelect() {
 
     }
@@ -48,6 +53,7 @@ public class TreeSelect implements Serializable {
         this.label = dept.getDeptName();
         this.disabled = StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus());
         this.children = dept.getChildren().stream().map(TreeSelect::new).collect(Collectors.toList());
+        this.userList = dept.getUserList();
     }
 
     public TreeSelect(SysMenu menu) {

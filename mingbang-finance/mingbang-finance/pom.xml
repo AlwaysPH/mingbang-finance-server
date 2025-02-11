@@ -183,6 +183,13 @@
                 <version>${lombok.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>31.1-jre</version>
+            </dependency>
+
+
             <!-- 验证码 -->
             <dependency>
                 <groupId>pro.fessional</groupId>
